@@ -1,0 +1,20 @@
+service: happy-6-pm
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+  stage: ${env:stage}
+  region: ap-southeast-1
+  profile: ${env:profile}
+  timeout: 900
+  memorySize: 2048
+
+functions:
+  auto-report:
+    handler: build/handler.autoReport
+    events:
+      - schedule: cron(30 0,9 ? * MON-FRI *)
+plugins:
+  - serverless-dotenv-plugin
