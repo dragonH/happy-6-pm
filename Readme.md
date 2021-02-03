@@ -6,4 +6,8 @@
 
 - npm i serverless -g
 
-- set up the file `.env.development`
+- set up aws credential
+
+- set up the file `.env.development` by following `.env.development.template`
+
+- deploy with command `sls deploy`
