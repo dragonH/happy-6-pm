@@ -30,7 +30,7 @@ export const autoReport = async () => {
             ],
             defaultViewport: chromium.defaultViewport,
             executablePath: await chromium.executablePath,
-            headless: true,
+            headless: false,
             ignoreHTTPSErrors: true,
         });
         const page = (await browser.pages())[0] || await browser.newPage();
@@ -52,7 +52,7 @@ export const autoReport = async () => {
         await page.waitForSelector('input[value="Yes"]', { timeout: 60000 });
         await page.click('input[value="Yes"]');
         await page.waitForTimeout(2000);
-        const currentTime = moment().add(8, 'hours');
+        const currentTime = moment();
         console.log(`[Message]: Current time is ${currentTime.toDate()}`);
         await page.waitForSelector('input[value="正常"]', { timeout: 60000 });
         await page.click('input[value="正常"]');
@@ -92,8 +92,8 @@ export const autoReport = async () => {
         await page.click('input[type="checkbox"]');
         console.log('[Message]: 勾選回條');
         await page.waitForSelector('button[title="Submit"]', { timeout: 60000 });
-        await page.click('button[title="Submit"]');
-        await browser.close();
+        // await page.click('button[title="Submit"]');
+        // await browser.close();
         console.log('[Message]: Auto report succeed.');
     } catch (error) {
         console.error(error);
