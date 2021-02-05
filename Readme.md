@@ -14,7 +14,7 @@
 
 - set up the file `.env.development` by following `.env.development.template`
 
-- deploy with command `sls deploy`
+- compile and deploy with command `npm run deploy`
 
 ## Note
 
