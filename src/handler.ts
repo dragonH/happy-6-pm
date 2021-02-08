@@ -13,7 +13,7 @@ export const autoReport = async () => {
     try {
         const randomSleepSeconds = getRandomNumber();
         console.log(`[Message]: Starting to sleep for ${randomSleepSeconds} seconds`);
-        // await sleep(randomSleepSeconds);
+        await sleep(randomSleepSeconds);
         console.log(`[Message]: Finish to sleep for ${randomSleepSeconds} seconds`);
         const {
             url,
@@ -102,8 +102,8 @@ export const autoReport = async () => {
         await page.click('input[type="checkbox"]');
         console.log('[Message]: 勾選回條');
         await page.waitForSelector('button[title="Submit"]', { timeout: 60000 });
-        // await page.click('button[title="Submit"]');
-        // await browser.close();
+        await page.click('button[title="Submit"]');
+        await browser.close();
         console.log('[Message]: Auto report succeed.');
     } catch (error) {
         console.error(error);
