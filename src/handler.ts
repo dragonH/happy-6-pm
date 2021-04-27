@@ -30,7 +30,8 @@ export const autoReport = async () => {
             ],
             defaultViewport: chromium.defaultViewport,
             executablePath: await chromium.executablePath,
-            headless: true,
+            // headless: true,
+            headless: false,
             ignoreHTTPSErrors: true,
         });
         const page = (await browser.pages())[0] || await browser.newPage();
@@ -52,7 +53,8 @@ export const autoReport = async () => {
         await page.waitForSelector('input[value="Yes"]', { timeout: 60000 });
         await page.click('input[value="Yes"]');
         await page.waitForTimeout(2000);
-        const currentTime = moment();
+        // const currentTime = moment();
+        const currentTime = moment('2021-05-03 00:00:00');
         console.log(`[Message]: Current time is ${currentTime.toDate()}`);
         await page.waitForSelector('input[value="正常"]', { timeout: 60000 });
         await page.click('input[value="正常"]');
@@ -63,10 +65,6 @@ export const autoReport = async () => {
             await page.waitForSelector('input[value="晚上下班前填寫"]', { timeout: 60000 });
             await page.click('input[value="晚上下班前填寫"]');
             console.log('[Message]: 本次填寫時段選擇 晚上下班前填寫');
-            await page.waitForTimeout(1000);
-            await page.waitForSelector('input[value="直接回家不繞路"]', { timeout: 60000 });
-            await page.click('input[value="直接回家不繞路"]');
-            console.log('[Message]: 今晚預計移動地點選擇 直接回家不繞路');
         } else if (currentTime.day() === 1) {
             console.log('[Message]: This is morning report on Monday.');
             await page.waitForSelector('input[value="假日後上班(週一早上請選此項)"]', { timeout: 60000 });
@@ -91,6 +89,9 @@ export const autoReport = async () => {
             console.log('[Message]: 工作地點選擇 ECV辦公室');
         }
         await page.waitForTimeout(1000);
+        await page.waitForSelector('input[value="直接回家不繞路"]', { timeout: 60000 });
+        await page.click('input[value="直接回家不繞路"]');
+        console.log('[Message]: 今晚預計移動地點選擇 直接回家不繞路');
         // const image = await page.screenshot({ encoding: 'base64' })
         // console.log(image)
         await page.waitForTimeout(1000);
@@ -103,7 +104,7 @@ export const autoReport = async () => {
         console.log('[Message]: 勾選回條');
         await page.waitForSelector('button[title="Submit"]', { timeout: 60000 });
         await page.click('button[title="Submit"]');
-        await browser.close();
+        // await browser.close();
         console.log('[Message]: Auto report succeed.');
     } catch (error) {
         console.error(error);
