@@ -30,7 +30,7 @@ export const autoReport = async () => {
             ],
             defaultViewport: chromium.defaultViewport,
             executablePath: await chromium.executablePath,
-            headless: true,
+            headless: false,
             ignoreHTTPSErrors: true,
         });
         const page = (await browser.pages())[0] || await browser.newPage();
@@ -52,8 +52,7 @@ export const autoReport = async () => {
         await page.waitForSelector('input[value="Yes"]', { timeout: 60000 });
         await page.click('input[value="Yes"]');
         await page.waitForTimeout(2000);
-        // const currentTime = moment();
-        const currentTime = moment('2021-05-03 00:00:00');
+        const currentTime = moment();
         console.log(`[Message]: Current time is ${currentTime.toDate()}`);
         await page.waitForSelector('input[value="正常"]', { timeout: 60000 });
         await page.click('input[value="正常"]');
@@ -64,6 +63,14 @@ export const autoReport = async () => {
             await page.waitForSelector('input[value="晚上下班前填寫"]', { timeout: 60000 });
             await page.click('input[value="晚上下班前填寫"]');
             console.log('[Message]: 本次填寫時段選擇 晚上下班前填寫');
+            await page.waitForTimeout(1000);
+            await page.waitForSelector('input[value="否"]', { timeout: 60000 });
+            await page.click('input[value="否"]');
+            console.log('[Message]: 最近14天內曾接觸已列為觀察對象(如林口康橋國際學校 師生/親友)選擇 否');
+            await page.waitForTimeout(1000);
+            await page.waitForSelector('input[value="皆無"]', { timeout: 60000 });
+            await page.click('input[value="皆無"]');
+            console.log('[Message]: 最近14天內曾出入以下場所選擇 皆無');
         } else if (currentTime.day() === 1) {
             console.log('[Message]: This is morning report on Monday.');
             await page.waitForSelector('input[value="假日後上班(週一早上請選此項)"]', { timeout: 60000 });
@@ -94,9 +101,9 @@ export const autoReport = async () => {
         // const image = await page.screenshot({ encoding: 'base64' })
         // console.log(image)
         await page.waitForTimeout(1000);
-        await page.waitForSelector('input[value="是"]', { timeout: 60000 });
-        await page.click('input[value="是"]');
-        console.log('[Message]: 是否填寫工時表選擇 是');
+        await page.waitForSelector('input[value="免填"]', { timeout: 60000 });
+        await page.click('input[value="免填"]');
+        console.log('[Message]: 是否填寫工時表選擇 免填');
         await page.waitForTimeout(1000);
         await page.waitForSelector('input[type="checkbox"]', { timeout: 60000 });
         await page.click('input[type="checkbox"]');
