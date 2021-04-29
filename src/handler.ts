@@ -30,8 +30,7 @@ export const autoReport = async () => {
             ],
             defaultViewport: chromium.defaultViewport,
             executablePath: await chromium.executablePath,
-            // headless: true,
-            headless: false,
+            headless: true,
             ignoreHTTPSErrors: true,
         });
         const page = (await browser.pages())[0] || await browser.newPage();
@@ -99,10 +98,6 @@ export const autoReport = async () => {
             await page.click('input[value="ECV辦公室"]');
             console.log('[Message]: 工作地點選擇 ECV辦公室');
         }
-        // await page.waitForTimeout(1000);
-        // await page.waitForSelector('input[value="直接回家不繞路"]', { timeout: 60000 });
-        // await page.click('input[value="直接回家不繞路"]');
-        // console.log('[Message]: 今晚預計移動地點選擇 直接回家不繞路');
         // const image = await page.screenshot({ encoding: 'base64' })
         // console.log(image)
         await page.waitForTimeout(1000);
