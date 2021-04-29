@@ -71,6 +71,10 @@ export const autoReport = async () => {
             await page.waitForSelector('input[value="皆無"]', { timeout: 60000 });
             await page.click('input[value="皆無"]');
             console.log('[Message]: 最近14天內曾出入以下場所選擇 皆無');
+            await page.waitForTimeout(1000);
+            await page.waitForSelector('input[value="直接回家不繞路"]', { timeout: 60000 });
+            await page.click('input[value="直接回家不繞路"]');
+            console.log('[Message]: 今晚預計移動地點選擇 直接回家不繞路');
         } else if (currentTime.day() === 1) {
             console.log('[Message]: This is morning report on Monday.');
             await page.waitForSelector('input[value="假日後上班(週一早上請選此項)"]', { timeout: 60000 });
@@ -94,10 +98,6 @@ export const autoReport = async () => {
             await page.click('input[value="ECV辦公室"]');
             console.log('[Message]: 工作地點選擇 ECV辦公室');
         }
-        await page.waitForTimeout(1000);
-        await page.waitForSelector('input[value="直接回家不繞路"]', { timeout: 60000 });
-        await page.click('input[value="直接回家不繞路"]');
-        console.log('[Message]: 今晚預計移動地點選擇 直接回家不繞路');
         // const image = await page.screenshot({ encoding: 'base64' })
         // console.log(image)
         await page.waitForTimeout(1000);
@@ -109,7 +109,7 @@ export const autoReport = async () => {
         await page.click('input[type="checkbox"]');
         console.log('[Message]: 勾選回條');
         await page.waitForSelector('button[title="Submit"]', { timeout: 60000 });
-        await page.click('button[title="Submit"]');
+        // await page.click('button[title="Submit"]');
         // await browser.close();
         console.log('[Message]: Auto report succeed.');
     } catch (error) {
