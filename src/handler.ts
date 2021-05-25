@@ -13,7 +13,7 @@ export const autoReport = async () => {
     try {
         const randomSleepSeconds = getRandomNumber();
         console.log(`[Message]: Starting to sleep for ${randomSleepSeconds} seconds`);
-        // await sleep(randomSleepSeconds);
+        await sleep(randomSleepSeconds);
         console.log(`[Message]: Finish to sleep for ${randomSleepSeconds} seconds`);
         const {
             url,
@@ -31,6 +31,7 @@ export const autoReport = async () => {
             defaultViewport: chromium.defaultViewport,
             executablePath: await chromium.executablePath,
             headless: true,
+            // headless: false,
             ignoreHTTPSErrors: true,
         });
         const page = (await browser.pages())[0] || await browser.newPage();
@@ -53,6 +54,7 @@ export const autoReport = async () => {
         await page.click('input[value="Yes"]');
         await page.waitForTimeout(2000);
         const currentTime = moment();
+        // const currentTime = moment('2021-05-26 10:00');
         console.log(`[Message]: Current time is ${currentTime.toDate()}`);
         await page.waitForSelector('input[value="正常"]', { timeout: 60000 });
         await page.click('input[value="正常"]');
@@ -77,18 +79,24 @@ export const autoReport = async () => {
             await page.click('input[value="在家休息無外出"]');
             console.log('[Message]: 假日活動地點選擇 在家休息無外出');
             await page.waitForTimeout(1000);
-            await page.waitForSelector('input[value="ECV辦公室"]', { timeout: 60000 });
-            await page.click('input[value="ECV辦公室"]');
-            console.log('[Message]: 工作地點選擇 ECV辦公室');
+            // await page.waitForSelector('input[value="ECV辦公室"]', { timeout: 60000 });
+            // await page.click('input[value="ECV辦公室"]');
+            // console.log('[Message]: 工作地點選擇 ECV辦公室');
+            await page.waitForSelector('input[value="在家工作"]', { timeout: 60000 });
+            await page.click('input[value="在家工作"]');
+            console.log('[Message]: 工作地點選擇 在家工作');
         } else {
             console.log('[Message]: This is morning report except on Monday.');
             await page.waitForSelector('input[value="早上上班前填寫"]', { timeout: 60000 });
             await page.click('input[value="早上上班前填寫"]');
             console.log('[Message]: 本次填寫時段選擇 早上上班前填寫');
             await page.waitForTimeout(1000);
-            await page.waitForSelector('input[value="ECV辦公室"]', { timeout: 60000 });
-            await page.click('input[value="ECV辦公室"]');
-            console.log('[Message]: 工作地點選擇 ECV辦公室');
+            // await page.waitForSelector('input[value="ECV辦公室"]', { timeout: 60000 });
+            // await page.click('input[value="ECV辦公室"]');
+            // console.log('[Message]: 工作地點選擇 ECV辦公室');
+            await page.waitForSelector('input[value="在家工作"]', { timeout: 60000 });
+            await page.click('input[value="在家工作"]');
+            console.log('[Message]: 工作地點選擇 在家工作');
         }
         await page.waitForTimeout(1000);
         // const image = await page.screenshot({ encoding: 'base64' })
@@ -102,8 +110,8 @@ export const autoReport = async () => {
         await page.click('input[type="checkbox"]');
         console.log('[Message]: 勾選回條');
         await page.waitForSelector('button[title="Submit"]', { timeout: 60000 });
-        // await page.click('button[title="Submit"]');
-        // await browser.close();
+        await page.click('button[title="Submit"]');
+        await browser.close();
         console.log('[Message]: Auto report succeed.');
     } catch (error) {
         console.error(error);
