@@ -66,6 +66,14 @@ export const autoReport = async () => {
             await page.click('input[value="晚上下班前填寫"]');
             console.log('[Message]: 本次填寫時段選擇 晚上下班前填寫');
             await page.waitForTimeout(1000);
+            await page.waitForSelector('input[value="否"]', { timeout: 60000 });
+            await page.click('input[value="否"]');
+            console.log('[Message]: 最近14天內曾接觸已列為觀察對象(如林口康橋國際學校 師生/親友)選擇 否');
+            await page.waitForTimeout(1000);
+            await page.waitForSelector('input[value="皆無"]', { timeout: 60000 });
+            await page.click('input[value="皆無"]');
+            console.log('[Message]: 最近14天內曾出入以下場所選擇 皆無');
+            await page.waitForTimeout(1000);
             await page.waitForSelector('input[value="直接回家不繞路"]', { timeout: 60000 });
             await page.click('input[value="直接回家不繞路"]');
             console.log('[Message]: 今晚預計移動地點選擇 直接回家不繞路');
@@ -98,13 +106,12 @@ export const autoReport = async () => {
             await page.click('input[value="在家工作"]');
             console.log('[Message]: 工作地點選擇 在家工作');
         }
-        await page.waitForTimeout(1000);
         // const image = await page.screenshot({ encoding: 'base64' })
         // console.log(image)
         await page.waitForTimeout(1000);
-        await page.waitForSelector('input[value="是"]', { timeout: 60000 });
-        await page.click('input[value="是"]');
-        console.log('[Message]: 是否填寫工時表選擇 是');
+        await page.waitForSelector('input[value="免填"]', { timeout: 60000 });
+        await page.click('input[value="免填"]');
+        console.log('[Message]: 是否填寫工時表選擇 免填');
         await page.waitForTimeout(1000);
         await page.waitForSelector('input[type="checkbox"]', { timeout: 60000 });
         await page.click('input[type="checkbox"]');
