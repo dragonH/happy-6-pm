@@ -1,15 +1,39 @@
 // const chromium = require('chrome-aws-lambda');
+import { Authenticator } from 'otplib/core';
+import { keyDecoder, keyEncoder } from '@otplib/plugin-thirty-two';
+import { createDigest, createRandomBytes } from '@otplib/plugin-crypto';
 import chromium from 'chrome-aws-lambda';
 import moment from 'moment';
 
 const getRandomNumber = () => Math.ceil(Math.random() * 30);
 
 const sleep = async (seconds: number) => new Promise((resolve) => setTimeout(
+    /** This function is to wait for a period of time */
     () => resolve(true), seconds * 1000,
 ));
 
+const getMFAToken = async (
+    MFASecret: string,
+) => {
+    /** This function is to get mfa token */
+    try {
+        const authenticator = new Authenticator({
+            createDigest,
+            createRandomBytes,
+            keyDecoder,
+            keyEncoder,
+        });
+        const token = authenticator.generate(MFASecret);
+        return token;
+    } catch (error) {
+        console.error(error);
+        throw Error('Error Whilee Get MAF Token.');
+    }
+};
+
 // eslint-disable-next-line import/prefer-default-export
 export const autoReport = async () => {
+    /** This function is to process auto report */
     try {
         const randomSleepSeconds = getRandomNumber();
         console.log(`[Message]: Starting to sleep for ${randomSleepSeconds} seconds`);
@@ -19,8 +43,9 @@ export const autoReport = async () => {
             url,
             email,
             password,
+            MFASecret,
         } = process.env;
-        if (!url || !email || !password) {
+        if (!url || !email || !password || !MFASecret) {
             throw new Error('Missing parameters.');
         }
         const browser = await chromium.puppeteer.launch({
@@ -49,6 +74,13 @@ export const autoReport = async () => {
         await page.waitForSelector('input[value="Sign in"]', { timeout: 60000 });
         await page.waitForSelector('input[value="Sign in"]', { timeout: 60000 });
         await page.click('input[value="Sign in"]');
+        const MFAToken = await getMFAToken(MFASecret);
+        await page.waitForSelector('#idTxtBx_SAOTCC_OTC', { timeout: 60000 });
+        await page.focus('#idTxtBx_SAOTCC_OTC');
+        await page.keyboard.type(MFAToken);
+        await page.waitForSelector('input[value="Verify"]', { timeout: 60000 });
+        await page.waitForSelector('input[value="Verify"]', { timeout: 60000 });
+        await page.click('input[value="Verify"]');
         console.log('[Message]: Login successfully.');
         await page.waitForSelector('input[value="Yes"]', { timeout: 60000 });
         await page.click('input[value="Yes"]');
@@ -60,19 +92,12 @@ export const autoReport = async () => {
         await page.click('input[value="正常"]');
         console.log('[Message]: 身體狀況選擇 正常');
         await page.waitForTimeout(1000);
+        console.log(currentTime.hours());
         if (currentTime.hours() > 2) {
             console.log('[Message]: This is night report.');
             await page.waitForSelector('input[value="晚上下班前填寫"]', { timeout: 60000 });
             await page.click('input[value="晚上下班前填寫"]');
             console.log('[Message]: 本次填寫時段選擇 晚上下班前填寫');
-            await page.waitForTimeout(1000);
-            await page.waitForSelector('input[value="否"]', { timeout: 60000 });
-            await page.click('input[value="否"]');
-            console.log('[Message]: 最近14天內曾接觸已列為觀察對象(如林口康橋國際學校 師生/親友)選擇 否');
-            await page.waitForTimeout(1000);
-            await page.waitForSelector('input[value="皆無"]', { timeout: 60000 });
-            await page.click('input[value="皆無"]');
-            console.log('[Message]: 最近14天內曾出入以下場所選擇 皆無');
             await page.waitForTimeout(1000);
             await page.waitForSelector('input[value="直接回家不繞路"]', { timeout: 60000 });
             await page.click('input[value="直接回家不繞路"]');
@@ -87,9 +112,6 @@ export const autoReport = async () => {
             await page.click('input[value="在家休息無外出"]');
             console.log('[Message]: 假日活動地點選擇 在家休息無外出');
             await page.waitForTimeout(1000);
-            // await page.waitForSelector('input[value="ECV辦公室"]', { timeout: 60000 });
-            // await page.click('input[value="ECV辦公室"]');
-            // console.log('[Message]: 工作地點選擇 ECV辦公室');
             await page.waitForSelector('input[value="在家工作"]', { timeout: 60000 });
             await page.click('input[value="在家工作"]');
             console.log('[Message]: 工作地點選擇 在家工作');
@@ -99,15 +121,10 @@ export const autoReport = async () => {
             await page.click('input[value="早上上班前填寫"]');
             console.log('[Message]: 本次填寫時段選擇 早上上班前填寫');
             await page.waitForTimeout(1000);
-            // await page.waitForSelector('input[value="ECV辦公室"]', { timeout: 60000 });
-            // await page.click('input[value="ECV辦公室"]');
-            // console.log('[Message]: 工作地點選擇 ECV辦公室');
             await page.waitForSelector('input[value="在家工作"]', { timeout: 60000 });
             await page.click('input[value="在家工作"]');
             console.log('[Message]: 工作地點選擇 在家工作');
         }
-        // const image = await page.screenshot({ encoding: 'base64' })
-        // console.log(image)
         await page.waitForTimeout(1000);
         await page.waitForSelector('input[value="免填"]', { timeout: 60000 });
         await page.click('input[value="免填"]');
