@@ -35,10 +35,10 @@ const getMFAToken = async (
 export const autoReport = async () => {
     /** This function is to process auto report */
     try {
-        // const randomSleepSeconds = getRandomNumber();
-        // console.log(`[Message]: Starting to sleep for ${randomSleepSeconds} seconds`);
-        // await sleep(randomSleepSeconds);
-        // console.log(`[Message]: Finish to sleep for ${randomSleepSeconds} seconds`);
+        const randomSleepSeconds = getRandomNumber();
+        console.log(`[Message]: Starting to sleep for ${randomSleepSeconds} seconds`);
+        await sleep(randomSleepSeconds);
+        console.log(`[Message]: Finish to sleep for ${randomSleepSeconds} seconds`);
         const {
             url,
             email,
@@ -55,8 +55,8 @@ export const autoReport = async () => {
             ],
             defaultViewport: chromium.defaultViewport,
             executablePath: await chromium.executablePath,
-            // headless: true,
-            headless: false,
+            headless: true,
+            // headless: false,
             ignoreHTTPSErrors: true,
         });
         const page = (await browser.pages())[0] || await browser.newPage();
