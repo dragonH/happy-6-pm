@@ -129,6 +129,12 @@ export const autoReport = async () => {
         await page.waitForSelector('input[value="免填"]', { timeout: 60000 });
         await page.click('input[value="免填"]');
         console.log('[Message]: 是否填寫工時表選擇 免填');
+        if (currentTime.hours() > 2) {
+            await page.waitForTimeout(1000);
+            await page.waitForSelector('input[value="否，從未出入該市場"]', { timeout: 60000 });
+            await page.click('input[value="否，從未出入該市場"]');
+            console.log('[Message]: 曾於6/8~7/1期間至環南市場 否，從未出入該市場');
+        }
         await page.waitForTimeout(1000);
         await page.waitForSelector('input[type="checkbox"]', { timeout: 60000 });
         await page.click('input[type="checkbox"]');
