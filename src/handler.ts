@@ -35,10 +35,10 @@ const getMFAToken = async (
 export const autoReport = async () => {
     /** This function is to process auto report */
     try {
-        const randomSleepSeconds = getRandomNumber();
-        console.log(`[Message]: Starting to sleep for ${randomSleepSeconds} seconds`);
-        await sleep(randomSleepSeconds);
-        console.log(`[Message]: Finish to sleep for ${randomSleepSeconds} seconds`);
+        // const randomSleepSeconds = getRandomNumber();
+        // console.log(`[Message]: Starting to sleep for ${randomSleepSeconds} seconds`);
+        // await sleep(randomSleepSeconds);
+        // console.log(`[Message]: Finish to sleep for ${randomSleepSeconds} seconds`);
         const {
             url,
             email,
@@ -55,8 +55,8 @@ export const autoReport = async () => {
             ],
             defaultViewport: chromium.defaultViewport,
             executablePath: await chromium.executablePath,
-            headless: true,
-            // headless: false,
+            // headless: true,
+            headless: false,
             ignoreHTTPSErrors: true,
         });
         const page = (await browser.pages())[0] || await browser.newPage();
@@ -129,6 +129,12 @@ export const autoReport = async () => {
         await page.waitForSelector('input[value="免填"]', { timeout: 60000 });
         await page.click('input[value="免填"]');
         console.log('[Message]: 是否填寫工時表選擇 免填');
+        if (currentTime.hours() > 2) {
+            await page.waitForTimeout(1000);
+            await page.waitForSelector('input[value="否，從未出入該市場"]', { timeout: 60000 });
+            await page.click('input[value="否，從未出入該市場"]');
+            console.log('[Message]: 曾於6/8~7/1期間至環南市場 否，從未出入該市場');
+        }
         await page.waitForTimeout(1000);
         await page.waitForSelector('input[type="checkbox"]', { timeout: 60000 });
         await page.click('input[type="checkbox"]');
