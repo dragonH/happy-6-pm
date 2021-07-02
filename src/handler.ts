@@ -127,7 +127,7 @@ const processLoginAction = async (
         await _page.waitForTimeout(2000);
     } catch (error) {
         logger.error(error);
-        throw new Error('Error while process login action');
+        throw new Error('Error while process login action.');
     }
 };
 
