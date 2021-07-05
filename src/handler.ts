@@ -344,9 +344,9 @@ export const autoReport = async () => {
         await processTimesheetReport(
             page,
         );
-        await processSpecialReport(
-            page,
-        );
+        // await processSpecialReport(
+        //     page,
+        // );
         await processCheckReply(
             page,
         );
