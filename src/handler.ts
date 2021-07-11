@@ -218,9 +218,12 @@ const processBeforeWorkReport = async (
         await _page.click('input[value="早上上班前填寫"]');
         logger.info('本次填寫時段選擇 早上上班前填寫');
         await _page.waitForTimeout(1000);
-        await _page.waitForSelector('input[value="在家工作"]', { timeout: 60000 });
-        await _page.click('input[value="在家工作"]');
-        logger.info('工作地點選擇 在家工作');
+        await _page.waitForSelector('input[value="ECV辦公室"]', { timeout: 60000 });
+        await _page.click('input[value="ECV辦公室"]');
+        logger.info('工作地點選擇 ECV辦公室');
+        // await _page.waitForSelector('input[value="在家工作"]', { timeout: 60000 });
+        // await _page.click('input[value="在家工作"]');
+        // logger.info('工作地點選擇 在家工作');
     } catch (error) {
         logger.error(error);
         throw new Error('Error while process before work report.');
