@@ -197,9 +197,12 @@ const processBeforeWorkReportAfterHoliday = async (
         await _page.click('input[value="在家休息無外出 (Stayed at home)"]');
         logger.info('假日活動地點選擇 在家休息無外出 (Stayed at home)');
         await _page.waitForTimeout(1000);
-        await _page.waitForSelector('input[value="ECV辦公室(ECV Office)"]', { timeout: 60000 });
-        await _page.click('input[value="ECV辦公室(ECV Office)"]');
-        logger.info('工作地點選擇 ECV辦公室(ECV Office)');
+        // await _page.waitForSelector('input[value="ECV辦公室(ECV Office)"]', { timeout: 60000 });
+        // await _page.click('input[value="ECV辦公室(ECV Office)"]');
+        // logger.info('工作地點選擇 ECV辦公室(ECV Office)');
+        await _page.waitForSelector('input[value="在家工作(WFH)"]', { timeout: 60000 });
+        await _page.click('input[value="在家工作(WFH)"]');
+        logger.info('工作地點選擇 在家工作(WFH)');
     } catch (error) {
         logger.error(error);
         throw new Error('Error while process before work report after holiday.');
@@ -218,12 +221,12 @@ const processBeforeWorkReport = async (
         await _page.click('input[value="早上上班前填寫( in the morning before punch in)"]');
         logger.info('本次填寫時段選擇 早上上班前填寫( in the morning before punch in)');
         await _page.waitForTimeout(1000);
-        await _page.waitForSelector('input[value="ECV辦公室(ECV Office)"]', { timeout: 60000 });
-        await _page.click('input[value="ECV辦公室(ECV Office)"]');
-        logger.info('工作地點選擇 ECV辦公室(ECV Office)');
-        // await _page.waitForSelector('input[value="在家工作"]', { timeout: 60000 });
-        // await _page.click('input[value="在家工作"]');
-        // logger.info('工作地點選擇 在家工作');
+        // await _page.waitForSelector('input[value="ECV辦公室(ECV Office)"]', { timeout: 60000 });
+        // await _page.click('input[value="ECV辦公室(ECV Office)"]');
+        // logger.info('工作地點選擇 ECV辦公室(ECV Office)');
+        await _page.waitForSelector('input[value="在家工作(WFH)"]', { timeout: 60000 });
+        await _page.click('input[value="在家工作(WFH)"]');
+        logger.info('工作地點選擇 在家工作(WFH)');
     } catch (error) {
         logger.error(error);
         throw new Error('Error while process before work report.');
