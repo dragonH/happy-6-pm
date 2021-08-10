@@ -250,22 +250,22 @@ const processTimesheetReport = async (
     }
 };
 
-// const processSpecialReport = async (
-//     _page: Page,
-// ) => {
-//     /**
-//     *   This function is to process special report
-//     */
-//     try {
-//         await _page.waitForTimeout(1000);
-//         await _page.waitForSelector('input[value="否，從未出入該市場"]', { timeout: 60000 });
-//         await _page.click('input[value="否，從未出入該市場"]');
-//         logger.info('曾於6/8~7/1期間至環南市場 否，從未出入該市場');
-//     } catch (error) {
-//         logger.error(error);
-//         throw new Error('Error while process special report.');
-//     }
-// };
+const processSpecialReport = async (
+    _page: Page,
+) => {
+    /**
+    *   This function is to process special report
+    */
+    try {
+        await _page.waitForTimeout(1000);
+        await _page.waitForSelector('input[value="以上皆無(none of the above)"]', { timeout: 60000 });
+        await _page.click('input[value="以上皆無(none of the above)"]');
+        logger.info('請問您是否在期間行經以下區域 選擇 以上皆無(none of the above)');
+    } catch (error) {
+        logger.error(error);
+        throw new Error('Error while process special report.');
+    }
+};
 
 const processCheckReply = async (
     _page: Page,
@@ -275,8 +275,8 @@ const processCheckReply = async (
     */
     try {
         await _page.waitForTimeout(1000);
-        await _page.waitForSelector('input[type="checkbox"]', { timeout: 60000 });
-        await _page.click('input[type="checkbox"]');
+        await _page.waitForSelector('.office-form-email-receipt-checkbox > div > div.checkbox > label > input', { timeout: 60000 });
+        await _page.click('.office-form-email-receipt-checkbox > div > div.checkbox > label > input');
         logger.info('勾選回條');
     } catch (error) {
         logger.error(error);
@@ -350,9 +350,9 @@ export const autoReport = async () => {
         await processTimesheetReport(
             page,
         );
-        // await processSpecialReport(
-        //     page,
-        // );
+        await processSpecialReport(
+            page,
+        );
         await processCheckReply(
             page,
         );
