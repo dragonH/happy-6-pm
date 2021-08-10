@@ -8,6 +8,12 @@ import log4js, { Logger } from 'log4js';
 
 let logger: Logger;
 
+////////////////////////////////////////////////
+// Where will you work today? WFH = ture / false
+const is_wfh  = ( "true" == process.env.is_wfh)
+const is_test = ( "true" == process.env.is_test)
+////////////////////////////////////////////////
+
 const initialLogger = async () => {
     /**
     *   This function is to initial logger
@@ -40,7 +46,7 @@ const initialBrowser = async () => {
             ],
             defaultViewport: chromium.defaultViewport,
             executablePath: await chromium.executablePath,
-            headless: true,
+            headless: !is_test,
             ignoreHTTPSErrors: true,
         });
         return browser;
@@ -110,20 +116,49 @@ const processLoginAction = async (
         await _page.focus('#i0118');
         await _page.keyboard.type(_password);
         logger.info(`Logging with password ${'*'.repeat(_password.length)}`);
-        await _page.waitForSelector('input[value="Sign in"]', { timeout: 60000 });
-        await _page.waitForSelector('input[value="Sign in"]', { timeout: 60000 });
-        await _page.click('input[value="Sign in"]');
+
+        if (is_test) {
+            await _page.waitForTimeout(2000);
+            await _page.waitForSelector('input[value="登入"]', { timeout: 60000 });
+            await _page.click('input[value="登入"]');
+        }
+
+        else {
+            await _page.waitForSelector('input[value="Sign in"]', { timeout: 60000 });
+            await _page.click('input[value="Sign in"]');
+        }
+
         const MFAToken = await getMFAToken(_MFASecret);
         await _page.waitForSelector('#idTxtBx_SAOTCC_OTC', { timeout: 60000 });
         await _page.focus('#idTxtBx_SAOTCC_OTC');
         await _page.keyboard.type(MFAToken);
         logger.info(`Verify with mfa token ${MFAToken}`);
-        await _page.waitForSelector('input[value="Verify"]', { timeout: 60000 });
-        await _page.waitForSelector('input[value="Verify"]', { timeout: 60000 });
-        await _page.click('input[value="Verify"]');
+
+        if (is_test) {
+            await _page.waitForTimeout(2000);
+            await _page.waitForSelector('input[value="驗證"]', { timeout: 60000 });
+            await _page.click('input[value="驗證"]');
+        }
+        
+        else {
+            await _page.waitForSelector('input[value="Verify"]', { timeout: 60000 });
+            await _page.click('input[value="Verify"]');
+        }
+
+        await _page.waitForTimeout(1000);
         logger.info('Log in succeed.');
-        await _page.waitForSelector('input[value="Yes"]', { timeout: 60000 });
-        await _page.click('input[value="Yes"]');
+
+        if (is_test) {
+            await _page.waitForTimeout(2000);
+            await _page.waitForSelector('input[value="是"]', { timeout: 60000 });
+            await _page.click('input[value="是"]');
+        }
+        
+        else {
+            await _page.waitForSelector('input[value="Yes"]', { timeout: 60000 });
+            await _page.click('input[value="Yes"]');
+        }
+
         await _page.waitForTimeout(2000);
     } catch (error) {
         logger.error(error);
@@ -150,6 +185,7 @@ const processHealthStatusCheck = async (
     _page: Page,
 ) => {
     try {
+        logger.info(`Your WFH mode is ${is_wfh}`);
         await _page.waitForSelector('input[value="正常(Normal)"]', { timeout: 60000 });
         await _page.click('input[value="正常(Normal)"]');
         logger.info('身體狀況選擇 正常(Normal)');
@@ -172,9 +208,28 @@ const processOffWorkReport = async (
         await _page.click('input[value="晚上下班前填寫(in the afternoon before punch out)"]');
         logger.info('本次填寫時段選擇 晚上下班前填寫(in the afternoon before punch out)');
         await _page.waitForTimeout(1000);
-        await _page.waitForSelector('input[value="直接回家不繞路(Back home directly)"]', { timeout: 60000 });
-        await _page.click('input[value="直接回家不繞路(Back home directly)"]');
-        logger.info('今晚預計移動地點選擇 直接回家不繞路(Back home directly)');
+
+        if (is_wfh) {
+            await _page.waitForSelector('input[value="在家休息無外出(Stay at home)"]', { timeout: 60000 });
+            await _page.click('input[value="在家休息無外出(Stay at home)"]');
+            logger.info('今晚預計移動地點選擇 在家休息無外出(Stay at home)');
+        }
+
+        else if (is_wfh == false) {
+            await _page.waitForSelector('input[value="直接回家不繞路(Back home directly)"]', { timeout: 60000 });
+            await _page.click('input[value="直接回家不繞路(Back home directly)"]');
+            logger.info('今晚預計移動地點選擇 直接回家不繞路(Back home directly)');
+        }
+
+        else {
+            logger.info('Work mode error, please check your code.');
+        }
+
+        await _page.waitForTimeout(1000);
+        await _page.waitForSelector('input[value="否 No"]', { timeout: 60000 });
+        await _page.click('input[value="否 No"]');
+        logger.info('是否填寫工時表選擇 否 No');
+
     } catch (error) {
         logger.error(error);
         throw new Error('Error while process off work report.');
@@ -197,12 +252,28 @@ const processBeforeWorkReportAfterHoliday = async (
         await _page.click('input[value="在家休息無外出 (Stayed at home)"]');
         logger.info('假日活動地點選擇 在家休息無外出 (Stayed at home)');
         await _page.waitForTimeout(1000);
-        await _page.waitForSelector('input[value="ECV辦公室(ECV Office)"]', { timeout: 60000 });
-        await _page.click('input[value="ECV辦公室(ECV Office)"]');
-        logger.info('工作地點選擇 ECV辦公室(ECV Office)');
-        // await _page.waitForSelector('input[value="在家工作(WFH)"]', { timeout: 60000 });
-        // await _page.click('input[value="在家工作(WFH)"]');
-        // logger.info('工作地點選擇 在家工作(WFH)');
+
+        if (is_wfh) {
+            await _page.waitForSelector('input[value="在家工作(WFH)"]', { timeout: 60000 });
+            await _page.click('input[value="在家工作(WFH)"]');
+            logger.info('工作地點選擇 在家工作(WFH)');
+        }
+        
+        else if (is_wfh == false) {
+            await _page.waitForSelector('input[value="ECV辦公室(ECV Office)"]', { timeout: 60000 });
+            await _page.click('input[value="ECV辦公室(ECV Office)"]');
+            logger.info('工作地點選擇 ECV辦公室(ECV Office)');
+        }
+
+        else {
+            logger.info('Work mode error, please check your code.');
+        }
+
+        await _page.waitForTimeout(1000);
+        await _page.waitForSelector('input[value="是Yes"]', { timeout: 60000 });
+        await _page.click('input[value="是Yes"]');
+        logger.info('是否填寫工時表選擇 是Yes');
+
     } catch (error) {
         logger.error(error);
         throw new Error('Error while process before work report after holiday.');
@@ -221,34 +292,50 @@ const processBeforeWorkReport = async (
         await _page.click('input[value="早上上班前填寫( in the morning before punch in)"]');
         logger.info('本次填寫時段選擇 早上上班前填寫( in the morning before punch in)');
         await _page.waitForTimeout(1000);
-        await _page.waitForSelector('input[value="ECV辦公室(ECV Office)"]', { timeout: 60000 });
-        await _page.click('input[value="ECV辦公室(ECV Office)"]');
-        logger.info('工作地點選擇 ECV辦公室(ECV Office)');
-        // await _page.waitForSelector('input[value="在家工作(WFH)"]', { timeout: 60000 });
-        // await _page.click('input[value="在家工作(WFH)"]');
-        // logger.info('工作地點選擇 在家工作(WFH)');
+
+        if (is_wfh) {
+            await _page.waitForSelector('input[value="在家工作(WFH)"]', { timeout: 60000 });
+            await _page.click('input[value="在家工作(WFH)"]');
+            logger.info('工作地點選擇 在家工作(WFH)');
+        }
+        
+        else if (is_wfh == false) {
+            await _page.waitForSelector('input[value="ECV辦公室(ECV Office)"]', { timeout: 60000 });
+            await _page.click('input[value="ECV辦公室(ECV Office)"]');
+            logger.info('工作地點選擇 ECV辦公室(ECV Office)');
+        }
+
+        else {
+            logger.info('Work mode error, please check your code.');
+        }
+
+        await _page.waitForTimeout(1000);
+        await _page.waitForSelector('input[value="是Yes"]', { timeout: 60000 });
+        await _page.click('input[value="是Yes"]');
+        logger.info('是否填寫工時表選擇 是Yes');
+
     } catch (error) {
         logger.error(error);
         throw new Error('Error while process before work report.');
     }
 };
 
-const processTimesheetReport = async (
-    _page: Page,
-) => {
-    /**
-    *   This function is to process timesheet report
-    */
-    try {
-        await _page.waitForTimeout(1000);
-        await _page.waitForSelector('input[value="免填"]', { timeout: 60000 });
-        await _page.click('input[value="免填"]');
-        logger.info('是否填寫工時表選擇 免填');
-    } catch (error) {
-        logger.error(error);
-        throw new Error('Error while process timesheet report.');
-    }
-};
+// const processTimesheetReport = async (
+//     _page: Page,
+// ) => {
+//     /**
+//     *   This function is to process timesheet report
+//     */
+//     try {
+//         await _page.waitForTimeout(1000);
+//         await _page.waitForSelector('input[value="免填"]', { timeout: 60000 });
+//         await _page.click('input[value="免填"]');
+//         logger.info('是否填寫工時表選擇 免填');
+//     } catch (error) {
+//         logger.error(error);
+//         throw new Error('Error while process timesheet report.');
+//     }
+// };
 
 // const processSpecialReport = async (
 //     _page: Page,
@@ -257,10 +344,17 @@ const processTimesheetReport = async (
 //     *   This function is to process special report
 //     */
 //     try {
+
 //         await _page.waitForTimeout(1000);
-//         await _page.waitForSelector('input[value="否，從未出入該市場"]', { timeout: 60000 });
-//         await _page.click('input[value="否，從未出入該市場"]');
-//         logger.info('曾於6/8~7/1期間至環南市場 否，從未出入該市場');
+//         await _page.waitForSelector('input[value="否NO"]', { timeout: 60000 });
+//         await _page.click('input[value="否NO"]');
+//         logger.info('在近兩周內是否有與確診者或是被匡列人士接觸選擇 否NO');
+
+//         await _page.waitForTimeout(1000);
+//         await _page.waitForSelector('input[value="否NO"]', { timeout: 60000 });
+//         await _page.click('input[value="否NO"]');
+//         logger.info('在近兩周內是否有與發燒或是身體不適患者接觸選擇 否NO');
+
 //     } catch (error) {
 //         logger.error(error);
 //         throw new Error('Error while process special report.');
@@ -291,8 +385,10 @@ const processSubmitReport = async (
     *   This function is to process submit report
     */
     try {
+        await _page.waitForTimeout(1000);
         await _page.waitForSelector('button[title="Submit"]', { timeout: 60000 });
         await _page.click('button[title="Submit"]');
+        logger.info('提交回應');
     } catch (error) {
         logger.error(error);
         throw new Error('Error while process submit report.');
@@ -310,6 +406,7 @@ export const autoReport = async () => {
         logger.info(`Starting to sleep for ${randomSleepSeconds} seconds`);
         await sleep(randomSleepSeconds);
         logger.info(`Finish to sleep for ${randomSleepSeconds} seconds`);
+        logger.info(`Your test mode is ${is_test}`);
         const {
             url,
             email,
@@ -347,18 +444,26 @@ export const autoReport = async () => {
                 page,
             );
         }
-        await processTimesheetReport(
-            page,
-        );
+        // await processTimesheetReport(
+        //     page,
+        // );
         // await processSpecialReport(
         //     page,
         // );
         await processCheckReply(
             page,
         );
-        await processSubmitReport(
-            page,
-        );
+        if (is_test) {
+            // await processSubmitReport(
+            //     page,
+            // );
+            logger.info('Skip process submit report');
+        }
+        else {
+            await processSubmitReport(
+                page,
+            );
+        }
         await browser.close();
         logger.info('Auto report succeed');
     } catch (error) {
