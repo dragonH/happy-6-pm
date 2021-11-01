@@ -2,7 +2,7 @@
   "name": "happy-6-pm",
   "version": "1.0.0",
   "description": "",
-  "main": "handler.js",
+  "main": "build/handler.js",
   "scripts": {
     "deploy": "tsc && sls deploy"
   },

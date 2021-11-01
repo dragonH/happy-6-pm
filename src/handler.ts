@@ -172,9 +172,9 @@ const processOffWorkReport = async (
         await _page.click('input[value="晚上下班前填寫(in the afternoon before punch out)"]');
         logger.info('本次填寫時段選擇 晚上下班前填寫(in the afternoon before punch out)');
         await _page.waitForTimeout(1000);
-        await _page.waitForSelector('input[value="直接回家不繞路(Back home directly)"]', { timeout: 60000 });
-        await _page.click('input[value="直接回家不繞路(Back home directly)"]');
-        logger.info('今晚預計移動地點選擇 直接回家不繞路(Back home directly)');
+        await _page.waitForSelector('input[value="直接回家不繞路 (Go home directly)"]', { timeout: 60000 });
+        await _page.click('input[value="直接回家不繞路 (Go home directly)"]');
+        logger.info('今晚預計移動地點選擇 直接回家不繞路 (Go home directly)');
     } catch (error) {
         logger.error(error);
         throw new Error('Error while process off work report.');
