@@ -137,7 +137,7 @@ const getCorrentTime = async () => {
     */
     try {
         const currentTime = moment();
-        // const currentTime = moment('2021-05-26 10:00');
+        // const currentTime = moment('2022-01-10 10:00');
         logger.info(`Current time is ${currentTime.toDate()}`);
         return currentTime;
     } catch (error) {
@@ -189,9 +189,9 @@ const processBeforeWorkReportAfterHoliday = async (
     */
     try {
         logger.info('Processing before work report after holiday');
-        await _page.waitForSelector('input[value="假日後上班(週一早上請選此項) (after break)(Monday or after holiday)"]', { timeout: 60000 });
-        await _page.click('input[value="假日後上班(週一早上請選此項) (after break)(Monday or after holiday)"]');
-        logger.info('本次填寫時段選擇 假日後上班(週一早上請選此項) (after break)(Monday or after holiday)');
+        await _page.waitForSelector('input[value="假日後上班(週一早上請選此項)  (after holidays or Monday morning)"]', { timeout: 60000 });
+        await _page.click('input[value="假日後上班(週一早上請選此項)  (after holidays or Monday morning)"]');
+        logger.info('本次填寫時段選擇 假日後上班(週一早上請選此項)  (after holidays or Monday morning)');
         await _page.waitForTimeout(1000);
         await _page.waitForSelector('input[value="在家休息無外出 (Stayed at home)"]', { timeout: 60000 });
         await _page.click('input[value="在家休息無外出 (Stayed at home)"]');
@@ -264,6 +264,48 @@ const processSpecialReport = async (
     } catch (error) {
         logger.error(error);
         throw new Error('Error while process special report.');
+    }
+};
+
+const processVaccineReport = async (
+    _page: Page,
+) => {
+    /**
+    *    This functrion is to process vaccine report
+    */
+    try {
+        await _page.waitForTimeout(1000);
+        await _page.waitForSelector('input[value="已施打一劑"]', { timeout: 60000 });
+        await _page.click('input[value="已施打一劑"]');
+        logger.info('您的新冠疫苗施打狀況? 選擇 已施打一劑');
+        await _page.waitForTimeout(1000);
+        await _page.waitForSelector('input[aria-label="第一劑疫苗種類, AZ"]', { timeout: 60000 });
+        await _page.click('input[aria-label="第一劑疫苗種類, AZ"]');
+        logger.info('已施打一劑疫苗 選擇 第一劑疫苗種類, AZ');
+    } catch (error) {
+        logger.error(error);
+        throw new Error('Error while process vaccine report.');
+    }
+};
+
+const processContactReport = async (
+    _page: Page,
+) => {
+    /**
+    *    This function is to process contact report
+    */
+    try {
+        await _page.waitForTimeout(1000);
+        await _page.waitForSelector('input[value="否NO"]', { timeout: 60000 });
+        await _page.click('input[value="否NO"]');
+        logger.info('在近兩周內是否有與確診者或是被匡列人士接觸? 選擇 否NO');
+        await _page.waitForTimeout(1000);
+        await _page.waitForSelector('input[value="否NO"][name="rce7548aa09354e9bbf9b8badb928f218"]', { timeout: 60000 });
+        await _page.click('input[value="否NO"][name="rce7548aa09354e9bbf9b8badb928f218"]');
+        logger.info('在近兩周內是否有與發燒或是身體不適患者接觸? 選擇 否NO');
+    } catch (error) {
+        logger.error(error);
+        throw new Error('Error while process contact report.');
     }
 };
 
@@ -350,9 +392,17 @@ export const autoReport = async () => {
         await processTimesheetReport(
             page,
         );
-        // await processSpecialReport(
-        //     page,
-        // );
+        if (currentTime.hours() > 2) {
+            await processContactReport(
+                page,
+            );
+            await processSpecialReport(
+                page,
+            );
+        }
+        await processVaccineReport(
+            page,
+        );
         await processCheckReply(
             page,
         );
